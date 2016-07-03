@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+       
+  
+  <bean id="ATMSearchEngine" class="com.backbase.atmlocator.service.ATMSearchEngine">
+  	<property name="dataProviderURL" value="https://www.ing.nl/api/locator/atms/" ></property>
+  </bean>
+  
+  <camelContext xmlns="http://camel.apache.org/schema/spring" trace="false">
+    
+    <camel:restConfiguration component="servlet" port="8080" host="localhost" contextPath="ATMLocator/services">
+    	<camel:dataFormatProperty key="prettyPrint" value="true"/>
+    </camel:restConfiguration>
+    <camel:rest id="searchATM" path="/searchATM" produces="application/json" bindingMode="json">
+    
+    	<camel:description>A REST web service that outputs a list of ATM details for provided Netherlands city</camel:description>
+    	<camel:get uri="/getATMByCity" produces="application/json" outType="com.backbase.atmlocator.model.ATM">
+    		
+    		<camel:to uri="bean:ATMSearchEngine?method=getATMByCity(${header.city})" id="rest-ATM-SearchEngine" ></camel:to>
+    	</camel:get>
+    </camel:rest>
+    
+  </camelContext>
+  
+  <bean id="RestServiceEntryPoint" class="com.backbase.atmlocator.security.RestServiceAuthenticationEntryPoint"></bean>
+  <bean id="RestServiceAuthenticationManager" class="com.backbase.atmlocator.security.NoOpAuthenticationManager"></bean>
+  <bean id="RestServiceAuthenticationSuccessHandler" class="com.backbase.atmlocator.security.RestServiceAuthenticationSuccessHandler"></bean>
+  <bean id="RestServiceAuthenticationFilter" class="com.backbase.atmlocator.security.RestServiceAuthenticationFilter">
+  	<constructor-arg name="defaultFilterProcessesUrl" type="java.lang.String" value="/services/**"/>
+  	<constructor-arg name="authenticationManager" ref="RestServiceAuthenticationManager"/>
+  	<constructor-arg name="successHandler" ref="RestServiceAuthenticationSuccessHandler"/>
+  </bean>
+  
+  
+  
+  <security:http entry-point-ref="RestServiceEntryPoint" pattern="/services/**" create-session="stateless" auto-config="false" use-expressions="true" authentication-manager-ref="RestServiceAuthenticationManager">
+  	<security:custom-filter ref="RestServiceAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
+  	<security:intercept-url pattern="/services/**" access="isAuthenticated()"/>
+  	
+  </security:http>
+  
+</beans>

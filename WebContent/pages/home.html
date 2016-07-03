@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html ng-app="atmlocator" ng-controller="ATMSearchController">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATM Search</title>
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="container" class="container">
+	<uib-accordion>
+		<uib-accordion-group heading="Welcome to ATM Search of ING Bank in Netherlands City" panel-class="panel-default panel-heading text-center" is-open="true">
+			<form id="atmSearchForm" name="atmSearchForm"  ng-submit="searchATM(cityName)">
+				<div class="form-group" ng-class="{'has-error':atmSearchForm.cityName.$touched && atmSearchForm.cityName.$invalid}">
+					<div class="row col-xs-12">
+						<label for="cityName" class="">Netherland City :</label>
+						<input class="" type="text" name="cityName" id="cityName" ng-model="cityName" ng-pattern="/^([A-Z\sa-z])+$/" ng-required="true" size="50" ng-maxlength="30" placeholder="Enter name of a dutch city here"/>
+						<button type="submit" class="btn btn-primary">Search</button>
+					</div>
+					<div class="help-block row col-xs-12" ng-messages="atmSearchForm.cityName.$error" ng-if="atmSearchForm.cityName.$touched">
+						<div ng-messages-include="messages.html"></div>
+					</div>
+				</div>
+			</form>
+			
+		</uib-accordion-group>
+	</uib-accordion>
+	<uib-alert type="warning" ng-show="errorMessage">{{errorMessage}}</uib-alert>
+	<uib-alert type="info" ng-show="recordCount">{{recordCount}} ING ATM found in {{cityName | uppercase}}</uib-alert>
+	<div id="searchResult" ng-show="resultData">
+		<table st-table="atmTable" st-safe-src="resultData" class="table table-striped">
+			<thead>
+				<tr>
+					<th>ATM Address</th>
+					<th>Distance</th>
+					<th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="row in atmTable">
+					<td>{{row.address.street}} {{row.address.housenumber}}, {{row.address.postalcode}}, {{row.address.city}}</td>
+					<td>{{row.distance}}</td>
+					<td>{{row.type}}</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="3">
+						<div st-pagination="" st-displayed-pages="pageCount"></div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+	
+<script type="text/javascript" src="../js/angular.min.js"></script>
+<script type="text/javascript" src="../js/angular-route.min.js"></script>
+<script type="text/javascript" src="../js/angular-animate.min.js"></script>
+<script type="text/javascript" src="../js/angular-messages.min.js"></script>
+<script type="text/javascript" src="../js/angular-touch.min.js"></script>
+<script type="text/javascript" src="../js/ui-bootstrap-tpls-1.3.2.min.js"></script>
+<script type="text/javascript" src="../js/smart-table.min.js"></script>
+<script type="text/javascript" src="../js/atmlocator.js"></script>
+</body>
+</html>
