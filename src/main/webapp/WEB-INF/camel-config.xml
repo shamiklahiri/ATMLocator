@@ -13,7 +13,7 @@
   
   <camelContext xmlns="http://camel.apache.org/schema/spring" trace="false">
     
-    <camel:restConfiguration component="servlet" port="8080" host="localhost" contextPath="ATMLocator/services">
+    <camel:restConfiguration component="servlet" port="8080" host="localhost" contextPath="services">
     	<camel:dataFormatProperty key="prettyPrint" value="true"/>
     </camel:restConfiguration>
     <camel:rest id="searchATM" path="/searchATM" produces="application/json" bindingMode="json">
