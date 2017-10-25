@@ -89,7 +89,7 @@ public class TestATMLocatorService {
 	private String getURL(String city) throws Exception{
 		String baseURL = "http://localhost:8080/ATMLocator/services/searchATM/getATMByCity?city=";
 		String uri = new StringBuilder().append(baseURL).append(URLEncoder.encode(city, "UTF-8")).toString();
-		System.out.println("URL to test : " + uri);
+		System.out.println("URL to test :: " + uri);
 		return uri;
 	}
 }
